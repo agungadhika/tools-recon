@@ -1,28 +1,22 @@
 import requests
-from bs4 import BeautifulSoup
-import re
 
-# Fungsi untuk mencari dan mencetak file dengan ekstensi tertentu dalam daftar tautan
-def find_and_print_files(links, extension, file_description):
-    matching_files = [link for link in links if link.endswith(extension)]
-    if matching_files:
-        print(f"{file_description} files:")
-        for file in matching_files:
-            print(file)
+def cek_git_directory(url):
+    # Tambahkan '/' ke URL jika tidak ada
+    if not url.endswith('/'):
+        url += '/'
 
-# URL dari website yang ingin Anda telusuri
-website_url = "https://api-node-app.jobseeker.partners/"  # Ganti dengan URL yang sesuai
+    # Gabungkan URL dengan .git
+    git_url = url + 'Dockerfile'
 
-# Mengambil semua tautan dari halaman web
-response = requests.get(website_url)
-soup = BeautifulSoup(response.text, 'html.parser')
-links = [link.get('href') for link in soup.find_all('a', href=True)]
+    # Kirim permintaan HTTP GET ke URL .git
+    response = requests.get(git_url)
 
-# Mencari dan mencetak file .git
-find_and_print_files(links, ".git", ".git")
+    # Periksa status respons untuk menentukan apakah .git ada
+    if response.status_code == 200:
+        print(f"File Docker ditemukan di {url}")
+    else:
+        print(f"File Docker tidak ditemukan di {url}")
 
-# Mencari dan mencetak file docker-compose.yml
-find_and_print_files(links, "docker-compose.yml", "docker-compose.yml")
-
-# Mencari dan mencetak file Dockerfile
-find_and_print_files(links, "Dockerfile", "Dockerfile")
+if __name__ == "__main__":
+    website_url = input("Masukkan URL website: ")
+    cek_git_directory(website_url)
